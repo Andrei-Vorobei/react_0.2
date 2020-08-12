@@ -48,14 +48,14 @@ export default class GotService {
 	}
 
 	_checkInfo = (info) => {
-		if (!info || !info[0]) {
+		if (!info) {
 			return '/no info/';
 		} else if (typeof info === 'object') {
-			return Object.values(info).join(', ');
+			return !info[0] ? '/no info/' :
+					Object.values(info).join('; ');
 		} else {
 			return info;
 		}
-
 	}
 
 	_getCharId = (url) => {
@@ -90,8 +90,8 @@ export default class GotService {
 		return {
 			id: this._getCharId(book.url),
 			name: this._checkInfo(book.name),
-			numberOfpages: this._checkInfo(book.numberOfPages),
-			publiser: this._checkInfo(book.publiser),
+			numberOfPages: this._checkInfo(book.numberOfPages),
+			publisher: this._checkInfo(book.publisher),
 			released: this._checkInfo(book.released)
 		}
 	}

@@ -1,64 +1,64 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import './itemList.css';
 import Spinner from '../spinner';
-import ErrorMessage from '../errorMessage';
+// import ErrorMessage from '../errorMessage';
+import PropTypes from 'prop-types';
 
-export default class ItemList extends Component {
+function ItemList({getData, onItemSelected, renderItem}) {
 
-	state = {
-		itemList: null,
-		error: false
-	}
+	const [itemList, updateList] = useState([]);
 
-	componentDidMount() {
-		const {getData} = this.props;
-
+	useEffect(() => {
 		getData() 
 			.then(itemList => {
-				this.setState({
-					itemList
-				});
+				updateList(itemList)
 			});
-	}
+	}, []);
 
-	renderItems(arr) {
+	function renderItems(arr) {
 		return arr.map((item) => {
 			// console.log(item);
 			const {id} = item;
-			const label = this.props.renderItem(item);
+			const label = renderItem(item);
 			return (
 				<li className="list-group-item"
 					key={id}
-					onClick={() => this.props.onItemSelected(id)}>
+					onClick={() => onItemSelected(id)}>
 						{label}
 				</li>
 			)
 		});
 	}
 
-	componentDidCatch() {
-		this.setState({
-			error: true
-		});
+	// componentDidCatch() {
+	// 	this.setState({
+	// 		error: true
+	// 	});
+	// }
+
+	// if (this.state.error) {
+	// 	return <ErrorMessage />;
+	// }
+
+	if (!itemList) {
+		return <Spinner />;
 	}
+	
+	const items = renderItems(itemList);
 
-	render() {
-		if (this.state.error) {
-			return <ErrorMessage />;
-		}
-
-		const {itemList} = this.state;
-		
-		if (!itemList) {
-			return <Spinner />;
-		}
-		
-		const items = this.renderItems(itemList);
-
-		return (
-			<ul className="item-list list-group">
-				{items}
-			</ul>
-		);
-	}
+	return (
+		<ul className="item-list list-group">
+			{items}
+		</ul>
+	);
 }
+
+ItemList.defaultProps = {
+	onItemSelected: () => {}
+}
+
+ItemList.propTypes = {
+	onItemSelected: PropTypes.func
+}
+
+export default ItemList;
